@@ -171,6 +171,61 @@ class TwitterAPIExchange
     }
     
     /**
+     * Build the Oauth object using params set in construct and additionals
+     * passed to this method. For v1.1, see: https://dev.twitter.com/docs/api/1.1
+     * 
+     * @param string $url The API url to use. Example: https://api.twitter.com/1.1/search/tweets.json
+     * @param string $requestMethod Either POST or GET
+     * @return \TwitterAPIExchange Instance of self for method chaining
+     */
+    public function buildReverseOauth($url, $requestMethod)
+    {
+        if (!in_array(strtolower($requestMethod), array('post', 'get')))
+        {
+            throw new Exception('Request method must be either POST or GET');
+        }
+        
+        $consumer_key = $this->consumer_key;
+        $consumer_secret = $this->consumer_secret;
+        //$oauth_access_token = $this->oauth_access_token;
+        //$oauth_access_token_secret = $this->oauth_access_token_secret;
+        
+        $oauth = array( 
+            'oauth_consumer_key' => $consumer_key,
+            'oauth_nonce' => time(),
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_token' => "",
+            'oauth_timestamp' => time(),
+            'oauth_version' => '1.0'
+        );
+        
+        $getfield = $this->getGetfield();
+        
+        if (!is_null($getfield))
+        {
+            $getfields = str_replace('?', '', explode('&', $getfield));
+            foreach ($getfields as $g)
+            {
+                $split = explode('=', $g);
+                $oauth[$split[0]] = $split[1];
+            }
+        }
+        
+        $base_info = $this->buildBaseString($url, $requestMethod, $oauth);
+
+        //var_dump($base_info);
+
+        $composite_key = rawurlencode($consumer_secret) . '&' . rawurlencode('');
+        $oauth_signature = base64_encode(hash_hmac('sha1', $base_info, $composite_key, true));
+        //var_dump($oauth_signature, rawurlencode($oauth_signature));
+        $oauth['oauth_signature'] = $oauth_signature;
+        
+        $this->url = $url;
+        $this->oauth = $oauth;
+        
+        return $this;
+    }
+    /**
      * Perform the actual data retrieval from the API
      * 
      * @param boolean $return If true, returns data.
@@ -185,14 +240,16 @@ class TwitterAPIExchange
         }
         
         $header = array($this->buildAuthorizationHeader($this->oauth), 'Expect:');
-        
+        //var_dump($header);
+
         $getfield = $this->getGetfield();
         $postfields = $this->getPostfields();
 
         $options = array( 
             CURLOPT_HTTPHEADER => $header,
-            CURLOPT_HEADER => false,
+            CURLOPT_HEADER => true,
             CURLOPT_URL => $this->url,
+//            CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 10,
         );
@@ -209,14 +266,21 @@ class TwitterAPIExchange
             }
         }
 
+        
         $feed = curl_init();
         curl_setopt_array($feed, $options);
         $json = curl_exec($feed);
         curl_close($feed);
-
+        /*
+        $json = '';
+        //$temp_str = 'curl --request \'POST\' \'https://api.twitter.com/oauth/request_token\' --data \'x_auth_mode=reverse_auth\' --header \'Authorization: OAuth oauth_consumer_key="88x88QmTY1fOCcugjm0QVVJpw", oauth_nonce="d3a16901e9b6b5bd33ea3a27baa94ca6", oauth_signature="h7NubvvBHdx%2Fs8U35yYoIexyeQM%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1406044385", oauth_token="", oauth_version="1.0"\' --verbose';
+        $temp_str = 'curl --request \'POST\' \'https://api.twitter.com/oauth/request_token\' --data \'x_auth_mode=reverse_auth\' --header \'Authorization: OAuth oauth_consumer_key="88x88QmTY1fOCcugjm0QVVJpw", oauth_nonce="d3a16901e9b6b5bd33ea3a27baa94ca6", oauth_signature="'.$this->oauth['oauth_signature'].'", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1406044385", oauth_token="", oauth_version="1.0"\' --verbose';
+        
+        var_dump(exec($temp_str));
+        */
         if ($return) { return $json; }
     }
-    
+
     /**
      * Private method to generate the base string used by cURL
      * 
