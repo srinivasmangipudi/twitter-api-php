@@ -1,15 +1,15 @@
 {
-  "name": "j7mbo/twitter-api-php",
-  "description": "Simple PHP Wrapper for Twitter API v1.1 calls",
+  "name": "srinivasmangipudi/twitter-api-php",
+  "description": "Simple PHP Wrapper for Twitter API v1.1 calls - extended for reverse auth",
   "version": "0.1",
   "type": "library",
   "keywords": ["twitter", "PHP", "API"],
-  "homepage": "https://github.com/j7mbo/twitter-api-php",
+  "homepage": "https://github.com/srinivasmangipudi/twitter-api-php",
   "license": "GNU Public License",
   "authors": [
     {
-      "name": "James Mallison",
-      "homepage": "https://github.com/j7mbo/twitter-api-php"
+      "name": "Srinivas Mangipudi",
+      "homepage": "https://github.com/srinivasmangipudi/twitter-api-php"
     }
   ],
   "autoload": {
