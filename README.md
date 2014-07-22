@@ -1,3 +1,20 @@
+Extending the lib below to add twitter reverse auth capability to this lib.
+
+To generate the special request token, instantiate the TwitterApiExcahange object and then call 'buildReverseOauth' method.
+E.g:
+
+        $postfields = array(
+            'x_auth_mode' => 'reverse_auth'
+        );
+
+        $twitter = new TwitterAPIExchange($tw_settings);
+        
+        $result = $twitter->setPostfields($postfields)
+                    ->buildReverseOauth($url, $requestMethod)
+                    ->performRequest();
+
+This should return you the oauth_access_token. Rest everything is same as below.
+
 twitter-api-php
 ======================
 Simple PHP Wrapper for Twitter API v1.1 calls
