@@ -247,7 +247,7 @@ class TwitterAPIExchange
 
         $options = array( 
             CURLOPT_HTTPHEADER => $header,
-            CURLOPT_HEADER => true,
+            CURLOPT_HEADER => false,
             CURLOPT_URL => $this->url,
 //            CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
