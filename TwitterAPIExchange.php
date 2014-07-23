@@ -271,13 +271,7 @@ class TwitterAPIExchange
         curl_setopt_array($feed, $options);
         $json = curl_exec($feed);
         curl_close($feed);
-        /*
-        $json = '';
-        //$temp_str = 'curl --request \'POST\' \'https://api.twitter.com/oauth/request_token\' --data \'x_auth_mode=reverse_auth\' --header \'Authorization: OAuth oauth_consumer_key="88x88QmTY1fOCcugjm0QVVJpw", oauth_nonce="d3a16901e9b6b5bd33ea3a27baa94ca6", oauth_signature="h7NubvvBHdx%2Fs8U35yYoIexyeQM%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1406044385", oauth_token="", oauth_version="1.0"\' --verbose';
-        $temp_str = 'curl --request \'POST\' \'https://api.twitter.com/oauth/request_token\' --data \'x_auth_mode=reverse_auth\' --header \'Authorization: OAuth oauth_consumer_key="88x88QmTY1fOCcugjm0QVVJpw", oauth_nonce="d3a16901e9b6b5bd33ea3a27baa94ca6", oauth_signature="'.$this->oauth['oauth_signature'].'", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1406044385", oauth_token="", oauth_version="1.0"\' --verbose';
-        
-        var_dump(exec($temp_str));
-        */
+
         if ($return) { return $json; }
     }
 
